@@ -14,6 +14,8 @@ REDDIT_USER_AGENT = "Python reddit aggregator (by /u/badescuga )"
 
 SUBREDDITS_PATH = "subreddits.json"
 
+subreddits_array = []
+
 def extractSubredditFromURL(url):
     string_split = url.split("/")
     return string_split[len(string_split) - 1]
@@ -21,7 +23,6 @@ def extractSubredditFromURL(url):
 # loading subreddits from json file
 with open(SUBREDDITS_PATH) as data_file:
     data = json.load(data_file)
-    subreddits_array = []
     # getting subreddits from full url e.g. https://www.reddit.com/r/television => 'television'
     for url in data["subreddits"]:
         subreddits_array.append(extractSubredditFromURL(url))
@@ -41,7 +42,7 @@ def fetchRedditData(subreddit_path):
     #     print submission.title
     subreddit=reddit.subreddit(subreddit_path)
     for submission in subreddit.new():
-        print submission.title
+        print submission.title, submission.created_utc
 
     print("=> fetchRedditData returning")
     return subreddit_path
