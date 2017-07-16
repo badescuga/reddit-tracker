@@ -14,13 +14,17 @@ REDDIT_USER_AGENT = "Python reddit aggregator (by /u/badescuga )"
 
 SUBREDDITS_PATH = "subreddits.json"
 
+def extractSubredditFromURL(url):
+    string_split = url.split("/")
+    return string_split[len(string_split) - 1]
+
 # loading subreddits from json file
 with open(SUBREDDITS_PATH) as data_file:
     data = json.load(data_file)
     subreddits_array = []
-    for key in data["subreddits"]:
-        string_split = key.split("/")
-        subreddits_array.append(string_split[len(string_split) - 1])
+    # getting subreddits from full url e.g. https://www.reddit.com/r/television => 'television'
+    for url in data["subreddits"]:
+        subreddits_array.append(extractSubredditFromURL(url))
 
 # init reddit api; TODO: create reddit connection specific for every worker, PRAW not safe
 reddit = praw.Reddit(client_id=REDDIT_CLIENT_ID,
@@ -29,11 +33,11 @@ reddit = praw.Reddit(client_id=REDDIT_CLIENT_ID,
 
 print("starting worker, worker_count: ", WORKER_COUNT)
 
+# fetch the reddit data
 def fetchRedditData(subreddit_path):
     print("=> subreddit: ", subreddit_path)
     # subreddit = reddit.subreddit('AskReddit')
     # for submission in subreddit.stream.submissions():
-    #     # do something with submission
     #     print submission.title
     subreddit=reddit.subreddit(subreddit_path)
     for submission in subreddit.new():
